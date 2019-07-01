@@ -45,19 +45,21 @@ func buildZapFields(req *http.Request, status, bodyBytesSent int, timestamp time
 // Write logs a message.
 func (logging *ZapLogging) Write(req *http.Request, status, bodyBytesSent int, timestamp time.Time) error {
 	fields := buildZapFields(req, status, bodyBytesSent, timestamp)
+
+	statusText := http.StatusText(status)
 	switch status / 100 {
 	case 1:
-		logging.logger.Info("HTTP informational response", fields...)
+		logging.logger.Info(statusText, fields...)
 	case 2:
-		logging.logger.Info("HTTP successful", fields...)
+		logging.logger.Info(statusText, fields...)
 	case 3:
-		logging.logger.Info("HTTP redirection", fields...)
+		logging.logger.Info(statusText, fields...)
 	case 4:
-		logging.logger.Warn("HTTP client error", fields...)
+		logging.logger.Warn(statusText, fields...)
 	case 5:
-		logging.logger.Error("HTTP server error", fields...)
+		logging.logger.Error(statusText, fields...)
 	default:
-		logging.logger.Warn("HTTP unknown status", fields...)
+		logging.logger.Warn("Unknown HTTP status", fields...)
 	}
 	return nil
 }
