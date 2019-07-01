@@ -27,6 +27,16 @@ func NewMultiHandler(loggingEngine LoggingEngine, next http.Handler) *MultiHandl
 	}
 }
 
+// NewMultiMiddleware Create HTTP middleware base on MultiHandler
+func NewMultiMiddleware(loggingEngine LoggingEngine) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return &MultiHandler{
+			loggingEngine: loggingEngine,
+			next:          next,
+		}
+	}
+}
+
 func (handler *MultiHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// wrap response
 	resp := &response{w: w}
